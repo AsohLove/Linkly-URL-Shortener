@@ -17,6 +17,7 @@ app.use("/docs", docsRouter)
 
 app.use('/links', linksRoutes);
 
+
 app.use((req, res, next) => {
     next(createError(404, "Route not found"))
 })
