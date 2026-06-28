@@ -32,7 +32,7 @@ export async function create({
 }
 
 
-export async function findLinkByCode() {
+export async function findLinkByCode(code) {
   const { rows } = await pool.query(
     `
     SELECT * 
@@ -52,7 +52,6 @@ export async function clickCount(linkId, referrer, userAgent) {
       await client.query('BEGIN');
 
       await client.query(
-        1
         ` 
         UPDATE links
         SET click_count = click_count + 1
@@ -74,7 +73,7 @@ export async function clickCount(linkId, referrer, userAgent) {
       await client.query('COMMIT');
 
   } catch (err) {
-    
+
       await client.query('ROLLBACK');
 
       throw err;
