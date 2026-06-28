@@ -1,5 +1,9 @@
 import express from "express"
+
 import docsRouter from "./routes/docs-route.js"
+import linksRoutes from './routes/links-routes.js'
+
+import createError from "http-errors"
 
 const app = express()
 
@@ -10,5 +14,20 @@ app.get("/health", (req, res) => {
 })
 
 app.use("/docs", docsRouter)
+
+app.use('/links', linksRoutes);
+
+app.use((req, res, next) => {
+    next(createError(404, "Route not found"))
+})
+
+app.use((err, req, res, next) => {
+    res.status(err.status || 500 ).json({
+        success: false,
+        message: err.message
+    });
+});
+
+
 
 export default app
