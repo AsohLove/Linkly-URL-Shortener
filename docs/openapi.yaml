@@ -1,0 +1,134 @@
+openapi: 3.0.3
+
+info:
+  title: Linkly API
+  description: A REST API service that allows users to shorten long URLs, redirect visitors, and analyze click events.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+tags:
+  - name: Health
+  - name: Links
+
+paths:
+
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Server health check
+      responses:
+        '200':
+          description: The API is healthy and running
+
+  /links:
+    post:
+      tags:
+        - Links
+      summary: Create a short link
+
+  /{code}:
+    get:
+      tags:
+        - Links
+      summary: Redirect to the original URL
+
+  /links/{code}:
+    get:
+      tags:
+        - Links
+      summary: Get link metadata
+
+    delete:
+      tags:
+        - Links
+      summary: Delete a link
+
+  /links/{code}/clicks:
+    get:
+      tags:
+        - Links
+      summary: Get click history
+
+  /links/{code}/clicks.csv:
+    get:
+      tags:
+        - Links
+      summary: Download click history as CSV
+
+components:
+
+  schemas:
+
+    Link:
+      type: object
+
+      properties:
+        code:
+          type: string
+          example: abc3ee3
+
+        target_url:
+          type: string
+          format: uri
+
+        created_at:
+          type: string
+          format: date-time
+
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+
+        click_count:
+          type: integer
+          example: 10
+
+    CreateLinkRequest:
+      type: object
+
+      required:
+        - target_url
+
+      properties:
+        target_url:
+          type: string
+          format: uri
+
+        code:
+          type: string
+          example: my_link
+
+        expires_at:
+          type: string
+          format: date-time
+
+    Click:
+      type: object
+
+      properties:
+        clicked_at:
+          type: string
+          format: date-time
+
+        referrer:
+          type: string
+
+        user_agent:
+          type: string
+
+    Error:
+      type: object
+
+      properties:
+        success:
+          type: boolean
+          example: false
+
+        message:
+          type: string
+          example: Link not found
