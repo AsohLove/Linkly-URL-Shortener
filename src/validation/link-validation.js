@@ -16,3 +16,9 @@ export const createShortLinkSchema = z.object({
     expires_at: z.string().datetime().optional()
 
 })
+
+export const codeLinkSchema = z.object({
+    code: z.string().regex(
+        /^[A-Za-z0-9_-]{3,16}$/, "You have entered invalid short code"
+    )
+});

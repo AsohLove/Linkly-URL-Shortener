@@ -8,24 +8,12 @@ export async function create({
     const { rows } = await pool.query(
         `
         INSERT INTO links
-        (
-            code,
-            target_url,
-            expires_at
-        )
-        VALUES
-        (
-            $1,
-            $2,
-            $3
+        ( code, target_url, expires_at ) VALUES
+        ( $1, $2, $3
         )
         RETURNING *
         `,
-        [
-            code,
-            target_url,
-            expires_at ?? null
-        ]
+        [ code, target_url, expires_at ?? null ]
     );
 
     return rows[0];
@@ -81,4 +69,20 @@ export async function clickCount(linkId, referrer, userAgent) {
   } finally {
       client.release();
   }
+}
+
+
+export async function getMetadata(code) {
+
+  const { rows } = await pool.query(
+    `
+    SELECT 
+      code, target_url, click_count, created_at, expires_at
+    FROM links
+    WHERE code = $1
+
+    `, [code]
+  );
+
+  return rows[0];
 }

@@ -3,6 +3,8 @@ import express from "express"
 import docsRouter from "./routes/docs-route.js"
 import linksRoutes from './routes/links-routes.js'
 
+import redirectRoute from './routes/redirect-routes.js'
+
 import createError from "http-errors"
 
 const app = express()
@@ -16,6 +18,10 @@ app.get("/health", (req, res) => {
 app.use("/docs", docsRouter)
 
 app.use('/links', linksRoutes);
+
+app.use('/', redirectRoute);
+
+
 
 
 app.use((req, res, next) => {
