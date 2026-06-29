@@ -1,8 +1,9 @@
 import express from "express"
 
 import docsRouter from "./routes/docs-route.js"
-import linksRoutes from './routes/links-routes.js'
-import redirectRoute from './routes/redirect-routes.js'
+import linksRouter from './routes/links-routes.js'
+import redirectRouter from './routes/redirect-routes.js'
+import authRouter from './routes/links-routes.js'
 
 import createError from "http-errors"
 
@@ -16,11 +17,14 @@ export function createApp() {
       res.json({ status: "OK" })
       })
 
-  app.use("/docs", docsRouter)
+  app.use("/docs", docsRouter);
 
-  app.use('/links', linksRoutes);
+  app.use('/auth', authRouter);
 
-  app.use('/', redirectRoute);
+  app.use('/links', linksRouter);
+
+
+  app.use('/', redirectRouter);
 
 
 

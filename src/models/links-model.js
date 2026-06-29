@@ -124,3 +124,4 @@ export async function getLinkClicks (code, after = 0, limit = 10) {
 
   return rows;
 }
+
