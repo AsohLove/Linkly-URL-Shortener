@@ -2,39 +2,39 @@ import express from "express"
 
 import docsRouter from "./routes/docs-route.js"
 import linksRoutes from './routes/links-routes.js'
-
 import redirectRoute from './routes/redirect-routes.js'
 
 import createError from "http-errors"
 
-const app = express()
+export function createApp() {
 
-app.use(express.json())
+  const app = express()
 
-app.get("/health", (req, res) => {
-    res.json({ status: "OK" })
-})
+  app.use(express.json())
 
-app.use("/docs", docsRouter)
+  app.get("/health", (req, res) => {
+      res.json({ status: "OK" })
+      })
 
-app.use('/links', linksRoutes);
+  app.use("/docs", docsRouter)
 
-app.use('/', redirectRoute);
+  app.use('/links', linksRoutes);
+
+  app.use('/', redirectRoute);
 
 
 
-
-app.use((req, res, next) => {
+  app.use((req, res, next) => {
     next(createError(404, "Route not found"))
-})
+  })
 
-app.use((err, req, res, next) => {
+  app.use((err, req, res, next) => {
     res.status(err.status || 500 ).json({
         success: false,
         message: err.message || "Internal Server Error"
     });
-});
+  });
 
+  return app;
 
-
-export default app
+}

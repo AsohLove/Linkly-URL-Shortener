@@ -1,12 +1,12 @@
 import { createServer } from 'node:http'
-import app from "./app.js"
+import { createApp } from "./app.js"
 import { pool } from './db/dbConnect.js'
 
 const PORT = process.env.PORT || 3000
 
-const server = createServer(app)
+const app = createApp()
 
-server.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`URL_Shortener running on http://localhost:${PORT}`)
 })
 
