@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS links (
     code VARCHAR(16) UNIQUE NOT NULL,
     target_url TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     expires_at TIMESTAMPTZ,
     click_count INTEGER NOT NULL DEFAULT 0 CHECK (click_count >= 0)
 );

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import bcrypt from 'bcrypt';
 import createError from "http-errors";
+import { requireAuth } from '../middleware/auth-middleware.js'
 
 // import { success } from "zod";
 
@@ -18,6 +19,9 @@ import { userAuthenticationSchema } from "../validation/auth-validation.js";
 
 const router = Router();
 
+
+router.use(requireAuth)
+
 router.post( "/", validate(createShortLinkSchema), async (req, res, next) => {
         try {
 
@@ -27,7 +31,7 @@ router.post( "/", validate(createShortLinkSchema), async (req, res, next) => {
                 input.code = generateLinkCode();
             }
 
-            const created = await links.create(input);
+            const created = await links.create({...input, user_id: req.user.id});
 
             res.status(201).json({
                 success: true,
@@ -50,12 +54,14 @@ router.post( "/", validate(createShortLinkSchema), async (req, res, next) => {
     }
 );
 
+
+
 router.get('/:code', validate(codeLinkSchema, "params"), async (req, res, next) => {
     try {
         
         const { code } = req.params;
 
-        const link = await links.getMetadata(code);
+        const link = await links.getMetadata(code, req.user.id);
 
         if (!link) {
             throw createError(404, "The link you entered is not found!!");
@@ -74,7 +80,7 @@ router.get('/:code', validate(codeLinkSchema, "params"), async (req, res, next) 
 router.delete('/:code', validate(codeLinkSchema, 'params'), async (req, res, next) => {
     try {
         
-        const deleted = await links.remove(req.params.code);
+        const deleted = await links.remove(req.params.code, req.user.id);
 
         if (!deleted) {
             throw createError(404, 'The link you entered is not found!!');
@@ -97,7 +103,7 @@ router.get('/:code/clicks',
 
                 const { after, limit } =  req.validateQuery;
 
-                const clicks = await links.getLinkClicks(code, after, limit);
+                const clicks = await links.getLinkClicks(code, req.user.id, after, limit);
 
                 res.json({
                     success: true,
