@@ -107,7 +107,27 @@ router.get('/:code/clicks',
             }
         })
 
+router.get('/:code/clicks.csv', validate(codeLinkSchema, "params"), async (req, res, next) => {
+    try {
+       
+        const rows = await links.getLinkClicks(req.params.code, 0, 100000);
 
+        res.setHeader("Content-Type", "text/csv");
+
+        res.setHeader("Content-Disposition", "attachment; filename=clicks.csv");
+
+        res.write("clicked_at,referrer,user_agent\n");
+
+        for (const row of rows){
+            res.write(`${row.clicked_at},${row.referrer ?? ""},${row.user_agent ?? ""}\n`);
+        }
+
+        res.end();
+
+    } catch (err) {
+        next(err);
+    }
+})
 
 
 
