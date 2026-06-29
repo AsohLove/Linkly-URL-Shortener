@@ -8,8 +8,12 @@ export function validate(schema, property = "body") {
                 errors: result.error.flatten()
             });
         }
-
-        req[property] = result.data;
+        
+        if (property === "query") {
+            req.validateQuery = result.data
+        } else {
+            req[property] = result.data;
+        }
 
         next();
     };

@@ -11,14 +11,38 @@ export const createShortLinkSchema = z.object({
             }
         ),
 
-    code: z.string('Link code must be a string').regex(/^[A-Za-z0-9_-]{3,16}$/).optional(),
+    code: z
+        .string('Link code must be a string')
+        .regex(/^[A-Za-z0-9_-]{3,16}$/)
+        .optional(),
 
-    expires_at: z.string().datetime().optional()
+    expires_at: z
+        .string()
+        .datetime()
+        .optional()
 
 })
 
 export const codeLinkSchema = z.object({
-    code: z.string().regex(
-        /^[A-Za-z0-9_-]{3,16}$/, "You have entered invalid short code"
-    )
+    code: z
+        .string()
+        .regex( /^[A-Za-z0-9_-]{3,16}$/, "You have entered invalid short code" )
 });
+
+
+export const querySchema = z.object({
+    after: z
+        .coerce
+        .number()
+        .int()
+        .min(0)
+        .default(0),
+    
+    limit: z
+        .coerce
+        .number()
+        .int()
+        .min(1)
+        .max(100)
+        .default(10)
+})

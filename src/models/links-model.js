@@ -26,6 +26,7 @@ export async function findLinkByCode(code) {
     SELECT * 
     FROM links 
     WHERE code = $1
+
     `, 
       [code]
   );
@@ -44,6 +45,7 @@ export async function clickCount(linkId, referrer, userAgent) {
         UPDATE links
         SET click_count = click_count + 1
         WHERE id = $1
+        
 
         `,
           [linkId]
@@ -54,6 +56,7 @@ export async function clickCount(linkId, referrer, userAgent) {
             INSERT INTO clicks
             ( link_id, referrer, user_agent ) VALUES
             ( $1, $2, $3 )
+           
             `,
             [ linkId, referrer, userAgent ]
         );
@@ -80,6 +83,7 @@ export async function getMetadata(code) {
       code, target_url, click_count, created_at, expires_at
     FROM links
     WHERE code = $1
+    
 
     `, [code]
   );
@@ -93,9 +97,30 @@ export async function remove(code) {
     `
     DELETE FROM links
     WHERE code = $1
-  
+    
+
     `, [code]
   );
 
   return result.rowCount
+}
+
+
+export async function getLinkClicks (code, after = 0, limit = 10) {
+
+  const { rows } = await pool.query(
+    `
+    SELECT 
+      c.id, c.clicked_at, c.referrer, c.user_agent
+    FROM clicks c
+    JOIN links l
+      ON c.link_id = l.id
+    WHERE l.code = $1 AND c.id > $2
+    ORDER BY c.id
+    LIMIT $3
+    
+    `, [code, after, limit]
+  );
+
+  return rows;
 }

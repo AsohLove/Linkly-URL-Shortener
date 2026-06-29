@@ -7,7 +7,7 @@ import { validate } from "../middleware/validate-middleware.js";
 
 import * as links from "../models/links-model.js";
 
-import { codeLinkSchema, createShortLinkSchema } from "../validation/link-validation.js";
+import { codeLinkSchema, createShortLinkSchema, querySchema } from "../validation/link-validation.js";
 
 import { generateLinkCode } from "../lib/generateLinkCode.js";
 
@@ -82,6 +82,34 @@ router.delete('/:code', validate(codeLinkSchema, 'params'), async (req, res, nex
         next(err);
     }
 });
+
+
+router.get('/:code/clicks', 
+        validate(codeLinkSchema, "params"), validate(querySchema, "query"),
+        async (req, res, next) => {
+            try {
+                
+                const { code } = req.params;
+
+                const { after, limit } =  req.validateQuery;
+
+                const clicks = await links.getLinkClicks(code, after, limit);
+
+                res.json({
+                    success: true,
+                    data: clicks,
+                    nextCursor: 
+                        clicks.length ? clicks.at(-1).id : null
+                });
+
+            } catch (err) {
+                next(err);
+            }
+        })
+
+
+
+
 
 
 export default router;
