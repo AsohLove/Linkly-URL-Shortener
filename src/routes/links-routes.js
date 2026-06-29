@@ -1,12 +1,16 @@
 import { Router } from "express";
 import createError from "http-errors";
 
+import { success } from "zod";
 
 import { validate } from "../middleware/validate-middleware.js";
 
-import { createShortLinkSchema } from "../validation/link-validation.js";
+import * as links from "../models/links-model.js";
+
+import { codeLinkSchema, createShortLinkSchema } from "../validation/link-validation.js";
 
 import { generateLinkCode } from "../lib/generateLinkCode.js";
+
 
 const router = Router();
 
@@ -42,7 +46,26 @@ router.post( "/", validate(createShortLinkSchema), async (req, res, next) => {
     }
 );
 
+router.get('/:code', validate(codeLinkSchema, "params"), async (req, res, next) => {
+    try {
+        
+        const { code } = req.params;
 
+        const link = await links.getMetadata(code);
+
+        if (!link) {
+            throw createError(404, "The link you entered is not found!!");
+        }
+
+        res.json({
+            success: true,
+            data: link
+        })
+
+    } catch (err) {
+        next(err);
+    }   
+});
 
 
 export default router;
