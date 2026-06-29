@@ -14,3 +14,15 @@ export async function create(email, hashedPassword) {
 
     return rows[0];
 }
+
+export async function findUserByEmail(email){
+    const { rows } = await pool.query(
+        `
+        SELECT * FROM users 
+        WHERE email = $1
+        
+        `, [email]
+    );
+
+    return rows[0];
+}

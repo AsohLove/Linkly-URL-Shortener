@@ -134,27 +134,5 @@ router.get('/:code/clicks.csv', validate(codeLinkSchema, "params"), async (req, 
 })
 
 
-router.post('/register', validate(userAuthenticationSchema), async (req, res, next) => {
-    try {
-        
-        const hash = await bcrypt.hash(
-            req.body.password,
-            10
-        );
-
-        const user = await users.create(req.body.email, hash);
-
-        res.status(201).json(user)
-
-    } catch (err) {
-        if (err.code==="23505") {
-            return next(createError(409, 'Email already exists!!'));
-        }
-        next(err);
-
-    }
-});
-
-
 
 export default router;

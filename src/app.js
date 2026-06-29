@@ -3,7 +3,7 @@ import express from "express"
 import docsRouter from "./routes/docs-route.js"
 import linksRouter from './routes/links-routes.js'
 import redirectRouter from './routes/redirect-routes.js'
-import authRouter from './routes/links-routes.js'
+import authRouter from './routes/auth-routes.js'
 
 import createError from "http-errors"
 
