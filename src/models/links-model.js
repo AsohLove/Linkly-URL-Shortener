@@ -86,3 +86,16 @@ export async function getMetadata(code) {
 
   return rows[0];
 }
+
+export async function remove(code) {
+
+  const result = await pool.query(
+    `
+    DELETE FROM links
+    WHERE code = $1
+  
+    `, [code]
+  );
+
+  return result.rowCount
+}

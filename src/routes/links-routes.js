@@ -67,5 +67,21 @@ router.get('/:code', validate(codeLinkSchema, "params"), async (req, res, next) 
     }   
 });
 
+router.delete('/:code', validate(codeLinkSchema, 'params'), async (req, res, next) => {
+    try {
+        
+        const deleted = await links.remove(req.params.code);
+
+        if (!deleted) {
+            throw createError(404, 'The link you entered is not found!!');
+        }
+
+        res.sendStatus(204);
+
+    } catch (err) {
+        next(err);
+    }
+});
+
 
 export default router;
