@@ -118,9 +118,7 @@ test("Linkly URL SHORTENER API contract", async (t) => {
         assert.equal(typeof body.token, 'string')
     
     })
-    //
-    // WRONG PASSWORD
-    //
+
     await t.test("Wrong password returns 401", async () => {
 
         const res = await fetch(`${base}/auth/login`, {
@@ -143,9 +141,6 @@ test("Linkly URL SHORTENER API contract", async (t) => {
 
     });
 
-    //
-    // CREATE LINK
-    //
     await t.test("POST /links creates a short link", async () => {
 
         const res = await fetch(`${base}/links`, {
@@ -172,9 +167,6 @@ test("Linkly URL SHORTENER API contract", async (t) => {
 
     });
 
-    //
-    // GET METADATA
-    //
     await t.test("GET /links/:code returns metadata", async () => {
 
         const res = await fetch(
@@ -193,9 +185,6 @@ test("Linkly URL SHORTENER API contract", async (t) => {
 
     });
 
-    //
-    // CLICK LOG
-    //
     await t.test("GET /links/:code/clicks returns click log", async () => {
 
         const res = await fetch(
@@ -214,9 +203,7 @@ test("Linkly URL SHORTENER API contract", async (t) => {
 
     });
 
-    //
-    // CSV
-    //
+
     await t.test("GET /links/:code/clicks.csv downloads CSV", async () => {
 
         const res = await fetch(
@@ -235,9 +222,7 @@ test("Linkly URL SHORTENER API contract", async (t) => {
 
     });
 
-    //
-    // REDIRECT
-    //
+
     await t.test("GET /:code redirects", async () => {
 
         const res = await fetch(
@@ -256,20 +241,12 @@ test("Linkly URL SHORTENER API contract", async (t) => {
 
     });
 
-    //
-    // DELETE
-    //
     await t.test("DELETE /links/:code deletes link", async () => {
 
-        const res = await fetch(
+        const res = await fetch( `${base}/links/${createdCode}`,
 
-            `${base}/links/${createdCode}`,
-
-            {
-
-                method: "DELETE",
-
-                headers: bearer(token)
+            { method: "DELETE",
+             headers: bearer(token)
 
             }
 

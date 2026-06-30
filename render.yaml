@@ -1,0 +1,19 @@
+services:
+
+- type: web
+
+  name: Linkly URL_Shortener api
+
+  runtime: node
+
+  buildCommand: npm ci
+
+  startCommand: npm start
+
+  envVars:
+
+    - key: DATABASE_URL
+
+    - key: JWT_SECRET
+
+    - key: LOG_LEVEL
