@@ -1,6 +1,6 @@
 import express from "express"
 
-import docsRouter from "./routes/docs-route.js"
+import { mountDocs } from "./routes/docs-route.js"
 import linksRouter from './routes/links-routes.js'
 import redirectRouter from './routes/redirect-routes.js'
 import authRouter from './routes/auth-routes.js'
@@ -30,13 +30,13 @@ export function createApp() {
 
   app.use(
     rateLimit({
-      windowMs: 15 * 60 * 100,
+      windowMs: 15 * 60 * 1000,
       max: 100,
       standardHeaders: true
     })
   )
 
-  app.use("/docs", docsRouter);
+  mountDocs(app)
 
   app.use('/auth', authRouter);
 
