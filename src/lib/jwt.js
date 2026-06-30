@@ -8,7 +8,7 @@ export function createToken(user) {
         id: user.id,
         email: user.email
         }, 
-        JWT_SECRET,
+        process.env.JWT_SECRET,
         {
             expiresIn: EXPIRES_IN
         }
@@ -16,5 +16,5 @@ export function createToken(user) {
 }
 
 export function verifyToken(token){
-    return jwt.verify(token, JWT_SECRET);
+    return jwt.verify(token, process.env.JWT_SECRET);
 }

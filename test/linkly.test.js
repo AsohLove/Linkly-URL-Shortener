@@ -36,9 +36,9 @@ async function login(base, email, password) {
         body: JSON.stringify({ email, password })
     });
 
-    const body = await res.json();
+    // const body = await res.json();
 
-    return body.data;
+    return res;
 }
 
 test("Linkly URL SHORTENER API contract", async (t) => {
@@ -98,24 +98,23 @@ test("Linkly URL SHORTENER API contract", async (t) => {
         assert.equal(res.status, 409);
     });
 
- 
-    // LOGIN
-    // await t.test("POST /auth/login returns JWT", async () => {
+    
 
-    //     token = await login(base, "love@test.com", "password123");
 
-    //     assert.ok(token);
+    await t.test("POST /auth/login user Login returns a JWT", async () => {
+        const res = await fetch(`${base}/auth/login`, {
+            method: "POST",
+            headers: json,
+            body: JSON.stringify({ email: "love@test.com", password: "password123"
+            })
+        });
 
-    // });
+        assert.equal(res.status, 200);
 
-     await t.test("POST /auth/login user Login returns a JWT", async () => {
-        const response = await login(base, "love@test.com", "password123")
-        console.log(response.status);
-        
-        assert.equal(response.status, 200)
-        const body = await response.json()
-        console.log(body);
-        assert.equal(typeof body.token, 'string')
+        const body = await res.json();
+        assert.equal(typeof body.token, "string");
+
+        token = body.token;
     
     })
 
@@ -223,7 +222,7 @@ test("Linkly URL SHORTENER API contract", async (t) => {
     });
 
 
-    await t.test("GET /:code redirects", async () => {
+    await t.test("GET /:code redirects with response code 302", async () => {
 
         const res = await fetch(
 

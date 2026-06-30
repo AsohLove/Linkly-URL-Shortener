@@ -14,6 +14,12 @@ router.get('/:code', validate(codeLinkSchema, "params"), async (req, res, next) 
         
         const link = await links.findLinkByCode(req.params.code);
 
+        const isValidCode = /^[a-zA-Z0-9_-]{3,30}$/.test(code);
+
+        if (!isValidCode) {
+            return next(createError(404, "Route not found"));
+        }
+
         if (!link) {
             throw createError(404, 'The link you entered is not found!!');
         }

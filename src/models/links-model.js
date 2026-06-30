@@ -21,16 +21,14 @@ export async function create({
 }
 
 
-export async function findLinkByCode(code, user_id) {
+export async function findLinkByCode(code) {
   const { rows } = await pool.query(
     `
     SELECT * 
     FROM links 
     WHERE code = $1
-    AND user_id = $2
-
     `, 
-      [code, user_id]
+      [code]
   );
 
   return rows[0];
