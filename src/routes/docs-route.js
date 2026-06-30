@@ -1,14 +1,17 @@
 import { readFileSync } from "node:fs";
 import YAML from "yamljs";
 import swaggerUi from "swagger-ui-express";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 
-const specUrl = new URL('../../openapi.yaml', import.meta.url)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-const specText = readFileSync(specUrl, "utf8");
+const specPath = join(__dirname, "../../docs/openapi.yaml");
 
+const specText = readFileSync(specPath, "utf8");
 
 const spec = YAML.parse(specText);
-
 
 export function mountDocs(app) {
   app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
