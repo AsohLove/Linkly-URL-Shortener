@@ -2,7 +2,6 @@ import jwt  from "jsonwebtoken";
 
 const EXPIRES_IN = "7d"
 
-const JWT_SECRET = process.env.JWT_SECRET;
 
 export function createToken(user) {
     return jwt.sign({

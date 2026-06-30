@@ -22,7 +22,10 @@ router.post('/register', validate(userAuthenticationSchema), async (req, res, ne
 
         const user = await users.create(req.body.email, hash);
 
-        res.status(201).json(user)
+        res.status(201).json({
+            success: true,
+            data: user
+        })
 
     } catch (err) {
         if (err.code==="23505") {
@@ -54,7 +57,7 @@ router.post('/login', validate(userLoginSchema), async (req, res, next) => {
 
         res.json({
             success: true,
-            token
+            data: token 
         });
 
 
