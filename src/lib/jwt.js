@@ -1,4 +1,5 @@
 import jwt  from "jsonwebtoken";
+import { config } from "../config.js";
 
 const EXPIRES_IN = "7d"
 
@@ -8,7 +9,7 @@ export function createToken(user) {
         id: user.id,
         email: user.email
         }, 
-        process.env.JWT_SECRET,
+        config.jwtSecret,
         {
             expiresIn: EXPIRES_IN
         }
@@ -16,5 +17,5 @@ export function createToken(user) {
 }
 
 export function verifyToken(token){
-    return jwt.verify(token, process.env.JWT_SECRET);
+    return jwt.verify(token, config.jwtSecret);
 }

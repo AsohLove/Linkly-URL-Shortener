@@ -1,17 +1,31 @@
 openapi: 3.0.3
 
 info:
-  title: Linkly API
-  description: A REST API service that allows users to shorten long URLs, redirect visitors, and analyze click events.
+  title: Linkly URL Shortener API
   version: 1.0.0
+  description: |
+    Linkly is a REST API for creating and managing short URLs.
+
+    Features include:
+
+      • User Registration
+      • User Login using JWT Authentication
+      • URL Shortening
+      • URL Redirection
+      • Click Tracking
+      • Click Analytics
+      • CSV Export
+      • Link Expiration
 
 servers:
   - url: http://localhost:3000
-    description: Local development server
+    description: Local Development Server
 
 tags:
   - name: Health
+  - name: Authentication
   - name: Links
+  - name: Redirect
 
 paths:
 
@@ -19,61 +33,341 @@ paths:
     get:
       tags:
         - Health
-      summary: Server health check
+      summary: API Health Check
+      description: Checks whether the API is running.
       responses:
-        '200':
-          description: The API is healthy and running
+        "200":
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+
+      responses:
+        "201":
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterResponse"
+
+        "409":
+          description: Email already exists
+
+        "400":
+          description: Validation error
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+
+      responses:
+        "200":
+          description: JWT Token returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+
+        "401":
+          description: Invalid email or password
 
   /links:
     post:
       tags:
         - Links
-      summary: Create a short link
+
+      security:
+        - bearerAuth: []
+
+      summary: Create a Short Link
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLinkRequest"
+
+      responses:
+        "201":
+          description: Short link created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateLinkResponse"
+
+        "409":
+          description: Short code already exists
+
+        "401":
+          description: Authentication required
 
   /{code}:
     get:
       tags:
-        - Links
-      summary: Redirect to the original URL
+        - Redirect
+
+      summary: Redirect to Original URL
+
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "302":
+          description: Redirects to the original URL
+
+        "404":
+          description: Link not found
+
+        "410":
+          description: Link expired
 
   /links/{code}:
+
     get:
       tags:
         - Links
-      summary: Get link metadata
+
+      security:
+        - bearerAuth: []
+
+      summary: Get Link Metadata
+
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: Link metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateLinkResponse"
+
+        "404":
+          description: Link not found
 
     delete:
       tags:
         - Links
-      summary: Delete a link
+
+      security:
+        - bearerAuth: []
+
+      summary: Delete Link
+
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "204":
+          description: Link deleted successfully
+
+        "404":
+          description: Link not found
 
   /links/{code}/clicks:
     get:
       tags:
         - Links
-      summary: Get click history
+
+      security:
+        - bearerAuth: []
+
+      summary: Retrieve Click History
+
+      parameters:
+
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+
+        - name: after
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 0
+
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 20
+
+      responses:
+        "200":
+          description: Click history
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClickList"
 
   /links/{code}/clicks.csv:
     get:
       tags:
         - Links
-      summary: Download click history as CSV
+
+      security:
+        - bearerAuth: []
+
+      summary: Download Click History as CSV
+
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: CSV file
 
 components:
 
+  securitySchemes:
+
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
+
+    RegisterRequest:
+      type: object
+
+      required:
+        - email
+        - password
+
+      properties:
+
+        email:
+          type: string
+          format: email
+          example: john@example.com
+
+        password:
+          type: string
+          example: password123
+
+    RegisterResponse:
+      type: object
+
+      properties:
+
+        success:
+          type: boolean
+          example: true
+
+        data:
+          type: object
+
+          properties:
+
+            id:
+              type: integer
+              example: 1
+
+            email:
+              type: string
+              example: john@example.com
+
+            created_at:
+              type: string
+              format: date-time
+
+    LoginRequest:
+      type: object
+
+      required:
+        - email
+        - password
+
+      properties:
+
+        email:
+          type: string
+          example: john@example.com
+
+        password:
+          type: string
+          example: password123
+
+    LoginResponse:
+      type: object
+
+      properties:
+
+        success:
+          type: boolean
+          example: true
+
+        data:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
     Link:
       type: object
 
       properties:
+
+        id:
+          type: integer
+          example: 1
+
         code:
           type: string
-          example: abc3ee3
+          example: AbC123
 
         target_url:
           type: string
           format: uri
+          example: https://google.com
 
         created_at:
           type: string
@@ -86,7 +380,7 @@ components:
 
         click_count:
           type: integer
-          example: 10
+          example: 15
 
     CreateLinkRequest:
       type: object
@@ -95,36 +389,78 @@ components:
         - target_url
 
       properties:
+
         target_url:
           type: string
           format: uri
+          example: https://google.com
 
         code:
           type: string
-          example: my_link
+          example: google
 
         expires_at:
           type: string
           format: date-time
 
+    CreateLinkResponse:
+      type: object
+
+      properties:
+
+        success:
+          type: boolean
+          example: true
+
+        data:
+          $ref: "#/components/schemas/Link"
+
     Click:
       type: object
 
       properties:
+
+        id:
+          type: integer
+          example: 10
+
         clicked_at:
           type: string
           format: date-time
 
         referrer:
           type: string
+          nullable: true
+          example: https://facebook.com
 
         user_agent:
           type: string
+          example: Mozilla/5.0
+
+    ClickList:
+      type: object
+
+      properties:
+
+        success:
+          type: boolean
+          example: true
+
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Click"
+
+        nextCursor:
+          type: integer
+          nullable: true
+          example: 25
 
     Error:
       type: object
 
       properties:
+
         success:
           type: boolean
           example: false

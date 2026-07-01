@@ -10,11 +10,14 @@ import pinoHttp from 'pino-http'
 import helmet from "helmet"
 import cors from "cors";
 import rateLimit from "express-rate-limit"
+import { config } from "./config.js"
 
 
 export function createApp() {
 
   const app = express()
+
+  app.set('trust proxy', 1)
 
   app.use(helmet({ contentSecurityPolicy: false }))
 
