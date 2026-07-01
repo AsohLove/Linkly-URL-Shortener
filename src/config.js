@@ -1,23 +1,3 @@
-// import dotenv from "dotenv";
-// import { z } from 'zod';
-
-// dotenv.config({
-//     path: process.env.NODE_ENV === "test" ? ".env.test" : ".env"
-// });
-
-// export const config = {
-//     env: process.env.NODE_ENV || "development",
-
-//     port: process.env.PORT || 3000,
-
-//     databaseUrl: process.env.DATABASE_URL,
-
-//     jwtSecret: process.env.JWT_SECRET,
-
-//     LEVEL: process.env.LOG_LEVEL
-
-// }
-
 import dotenv from "dotenv";
 import { z } from "zod";
 
@@ -51,7 +31,7 @@ const schema = z.object({
 const result = schema.safeParse(process.env);
 
 if (!result.success) {
-  console.error("\n❌ Invalid configuration:\n");
+  console.error("\n Invalid configuration:\n");
 
   for (const issue of result.error.issues) {
     console.error(`- ${issue.path.join(".")}: ${issue.message}`);

@@ -1,19 +1,25 @@
 services:
-
 - type: web
-
-  name: Linkly URL_Shortener api
-
+  name: Linkly-URL_Shortener-api
   runtime: node
 
-  buildCommand: npm ci
+  plan: free
 
+  buildCommand: npm ci
   startCommand: npm start
 
+  autoDeploy: true
+
+  healthCheckPath: /health
+
   envVars:
+    - key: NODE_ENV
+      value: production
 
     - key: DATABASE_URL
+      sync: false
 
     - key: JWT_SECRET
-
-    - key: LOG_LEVEL
+      sync: false
+      
+  
