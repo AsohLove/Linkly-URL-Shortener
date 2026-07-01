@@ -51,10 +51,6 @@ test("Linkly URL SHORTENER API contract", async (t) => {
 
     const base = `http://localhost:${server.address().port}`;
 
-    await pool.query(`
-        TRUNCATE clicks, links, users
-        RESTART IDENTITY CASCADE
-    `);
 
     t.after(async () => {
         server.close();
@@ -253,6 +249,18 @@ test("Linkly URL SHORTENER API contract", async (t) => {
 
         assert.equal(res.status, 204);
 
+    });
+
+    await t.test("SQL injection attempt stays harmless", async () => {
+
+        const res = await fetch(
+            `${base}/links/' OR 1=1 --`,
+            {
+                headers: bearer(token)
+            }
+        );
+
+        assert.equal(res.status, 400);
     });
 
 });

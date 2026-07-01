@@ -11,6 +11,8 @@ export const config = {
 
     databaseUrl: process.env.DATABASE_URL,
 
-    jwtSecret: process.env.JWT_SECRET
+    jwtSecret: process.env.JWT_SECRET,
+
+    LEVEL: process.env.LOG_LEVEL
 
 }

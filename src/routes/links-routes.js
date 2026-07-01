@@ -15,6 +15,7 @@ import { codeLinkSchema, createShortLinkSchema, querySchema } from "../validatio
 
 import { generateLinkCode } from "../lib/generateLinkCode.js";
 import { userAuthenticationSchema } from "../validation/auth-validation.js";
+import { createLinkLimiter } from "../middleware/link-rate-limit.js";
 
 
 const router = Router();
@@ -22,7 +23,7 @@ const router = Router();
 
 router.use(requireAuth)
 
-router.post( "/", validate(createShortLinkSchema), async (req, res, next) => {
+router.post( "/", createLinkLimiter, validate(createShortLinkSchema), async (req, res, next) => {
         try {
 
             const input = req.body;

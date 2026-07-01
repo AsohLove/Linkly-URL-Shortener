@@ -5,10 +5,20 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
+
     "dev": "node --watch src/server.js",
+
     "migrate": "node scripts/migrate.js",
+    "migrate:test": "NODE_ENV=test node scripts/migrate.js",
+
     "seed": "node scripts/seed.js",
-    "test": "NODE_ENV=test node --test"
+    "seed:test": "NODE_ENV=test node scripts/seed.js",
+
+    "test": "npm run reset-db && NODE_ENV=test node --test",
+
+    "reset-db": "NODE_ENV=test node scripts/reset-database.js"
+    
+    
   },
   "keywords": [],
   "author": "",
