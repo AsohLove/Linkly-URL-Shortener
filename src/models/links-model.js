@@ -118,9 +118,9 @@ export async function getLinkClicks (code, user_id, after = 0, limit = 10) {
       ON c.link_id = l.id
     WHERE l.code = $1 AND l.user_id = $2 AND c.id > $3
     ORDER BY c.id
-    LIMIT $3
+    LIMIT $4
     
-    `, [code, after, limit]
+    `, [code, user_id, after, limit]
   );
 
   return rows;
