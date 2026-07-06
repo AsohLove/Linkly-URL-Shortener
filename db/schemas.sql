@@ -1,0 +1,27 @@
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS links (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    code VARCHAR(16) UNIQUE NOT NULL,
+    target_url TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expires_at TIMESTAMPTZ,
+    click_count INTEGER NOT NULL DEFAULT 0 CHECK (click_count >= 0)
+);
+
+CREATE TABLE IF NOT EXISTS clicks (
+  id SERIAL PRIMARY KEY,
+  link_id INTEGER NOT NULL REFERENCES links(id) ON DELETE CASCADE,
+  clicked_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  referrer TEXT,
+  user_agent TEXT
+);
+
+CREATE INDEX idx_clicks_link_id_clicked_at ON clicks(link_id, clicked_at);
+
