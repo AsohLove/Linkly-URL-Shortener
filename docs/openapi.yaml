@@ -18,6 +18,9 @@ info:
       • Link Expiration
 
 servers:
+  - url: https://linkly-url-shortener.onrender.com
+    description: Production
+
   - url: http://localhost:3000
     description: Local Development Server
 
