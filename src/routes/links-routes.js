@@ -121,7 +121,7 @@ router.get('/:code/clicks',
 router.get('/:code/clicks.csv', validate(codeLinkSchema, "params"), async (req, res, next) => {
     try {
        
-        const rows = await links.getLinkClicks(req.params.code, 0, 100000);
+        const rows = await links.getLinkClicks(req.params.code, req.user.id, 0, 100);
 
         res.setHeader("Content-Type", "text/csv");
 

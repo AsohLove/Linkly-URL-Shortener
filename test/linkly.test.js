@@ -199,24 +199,30 @@ test("Linkly URL SHORTENER API contract", async (t) => {
     });
 
 
-    await t.test("GET /links/:code/clicks.csv downloads CSV", async () => {
+    await t.test("GET /links/:code/clicks.csv exports click log", async () => {
 
-        const res = await fetch(
-
-            `${base}/links/${createdCode}/clicks.csv`,
-
-            {
-
-                headers: bearer(token)
-
-            }
-
-        );
-
-        assert.equal(res.status, 200);
-
+    await fetch(`${base}/${createdCode}`, {
+        redirect: "manual"
     });
 
+    const res = await fetch(
+        `${base}/links/${createdCode}/clicks.csv`,
+        {
+            headers: bearer(token)
+        }
+    );
+
+    assert.equal(res.status, 200);
+
+    const csv = await res.text();
+
+    assert.match(csv, /clicked_at,referrer,user_agent/);
+
+    const lines = csv.trim().split("\n");
+
+    assert.ok(lines.length > 1);
+
+});
 
     await t.test("GET /:code redirects with response code 302", async () => {
 
@@ -263,4 +269,88 @@ test("Linkly URL SHORTENER API contract", async (t) => {
         assert.equal(res.status, 400);
     });
 
+    await t.test("Protected endpoint without JWT returns 401", async () => {
+
+        const res = await fetch(`${base}/links`, {
+            method: "POST",
+            headers: json,
+            body: JSON.stringify({
+                target_url: "https://google.com"
+            })
+        });
+
+        assert.equal(res.status, 401);
+
+        const body = await res.json();
+
+        assert.equal(body.success, false);
+
+    });
+
+    await t.test("Duplicate custom short code returns 409", async () => {
+
+        const first = await fetch(`${base}/links`, {
+            method: "POST",
+            headers: bearer(token),
+            body: JSON.stringify({
+                target_url: "https://google.com",
+                code: "mycode"
+            })
+        });
+
+        assert.equal(first.status, 201);
+
+        const second = await fetch(`${base}/links`, {
+            method: "POST",
+            headers: bearer(token),
+            body: JSON.stringify({
+                target_url: "https://github.com",
+                code: "mycode"
+            })
+        });
+
+        assert.equal(second.status, 409);
+
+    });
+
+    await t.test("Expired link returns 410", async () => {
+
+        const yesterday = new Date(Date.now() - 86400000).toISOString();
+
+        const create = await fetch(`${base}/links`, {
+            method: "POST",
+            headers: bearer(token),
+            body: JSON.stringify({
+                target_url: "https://google.com",
+                expires_at: yesterday
+            })
+        });
+
+        assert.equal(create.status, 201);
+
+        const body = await create.json();
+
+        const code = body.data.code;
+
+        const res = await fetch(`${base}/${code}`, {
+            redirect: "manual"
+        });
+
+        assert.equal(res.status, 410);
+
+    });
+
+    await t.test("Invalid JWT returns 401", async () => {
+
+        const res = await fetch(`${base}/links`, {
+            headers: {
+                authorization: "Bearer definitely-not-a-token"
+            }
+        });
+
+        assert.equal(res.status, 401);
+
+    });
+
 });
+
